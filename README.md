@@ -1,18 +1,107 @@
-## Bias-Correction for Privacy-Protected Spatial Autoregressive Models with  Application to Restaurant Network Analysis
+# Privacy-Protected Spatial Autoregressive Models: Reproducible Simulation
 
-This repository provides the Python code for the Corrected Likelihood Estimator (CLE) and the Corrected Least Squares Estimator (CLS) for spatial autoregressive (SAR) models with noise-added privacy protection, accompanying the paper.  
+This repository reorganizes the original research code accompanying the paper *Privacy-Protected Spatial Autoregressive Models with Applications* into a reproducible project for STATS 607 Unit 1 Project.
 
->Huang, D., Kong, Z., Wu, S., and Wang, H. (2024). Privacy-Protected Spatial Autoregressive Model. arXiv preprint arXiv:2403.16773 
+## What this project reproduces
 
-## Overview
-The classical SAR model relies on faithfully observed network data to estimate network dependence. However, to meet modern data privacy requirements, data providers inject artificially generated random noise into the response and covariate variables. This repository implements two estimation methods designed to correct the biases introduced by this noise:  Corrected Likelihood Estimator (CLE) and  Corrected Least Squares Estimator (CLS).
+The code implements the corrected likelihood estimator (CLE) and corrected least squares estimator (CLS) for the privacy-protected spatial autoregressive (PSAR) model.
 
-## Repository Structure
+For the course project, the designated reproducible outputs are intentionally smaller than the full paper experiments so the workflow is practical to rerun:
 
-|File name| Description |
-|-------------|---------------|
-|**`CLE.py`**| Contains the functions for the iterative estimation and statistical inference of the CLE method. |
-|**`CLS.py`**| Contains the functions for the iterative estimation and statistical inference of the CLS method. |
-|**`generation.py`**| Handles the simulation data generation. |
-|**`main.py`**| The main script to run Monte Carlo simulations. It executes the estimators under outputs performance metrics including Bias, Coverage Probability (CP), Mean Squared Error (MSE), and Standard Errors (SE). |
-|**`time.py`**| A comparative script to measure the running time of the CLE and CLS methods across different sample sizes. |
+- **Monte Carlo summary:** `N = 500`, `R = 100`, normal errors, Power-Law network, CLS estimator.
+- **Timing comparison:** CLE versus CLS for the sample-size grid in `src/timing.py`, with **5 repetitions per N** and the mean running time reported.
+
+The paper uses larger simulation budgets in several experiments. These reduced settings are a documented course-project choice for runtime, not a claim of exact numerical reproduction of every table and figure in the paper.
+
+## Paper-aligned settings
+
+The core parameter values follow the simulation section of the paper where applicable:
+
+- `beta = (0.3, 0.3)`
+- `rho = 0.2`
+- Monte Carlo privacy noise variances `lambda2 = 0.5` and `lambdax = 0.5`
+- timing experiment `lambda2 = 0.5` and `lambdax = 1.0`
+- covariates are generated from a standard normal distribution and truncated so every coordinate lies in `[-2, 2]`
+- fixed random seeds are used for reproducibility
+
+The original CLE/CLS estimating equations and network-generation implementations are otherwise preserved to keep the scientific code changes minimal.
+
+## Repository structure
+
+```text
+.
+├── src/
+│   ├── CLE.py            # Corrected likelihood estimator
+│   ├── CLS.py            # Corrected least-squares estimator
+│   ├── generation.py     # Simulation/network data generation
+│   ├── simulation.py     # Monte Carlo experiment and summary table
+│   └── timing.py         # CLE-vs-CLS timing experiment
+├── tests/
+│   └── test_project.py
+├── results/
+│   ├── tables/
+│   └── figures/
+├── requirements.txt
+├── Makefile
+└── README.md
+```
+
+## Setup from a fresh clone
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+## Reproduce the designated results
+
+```bash
+make reproduce
+```
+
+This creates:
+
+```text
+results/tables/simulation_summary.csv
+results/tables/timing.csv
+results/figures/timing.png
+```
+
+The timing step can be slow for large `N` because CLE contains dense matrix inversions. The course version uses 5 timing repetitions per sample size rather than the larger simulation budget used in the paper.
+
+## Run tests
+
+```bash
+make test
+```
+
+The tests validate two important pieces of the workflow:
+
+1. generated covariates satisfy the bounded-covariate condition used in the paper simulation;
+2. the reported Monte Carlo summary statistics are computed correctly on a known example.
+
+## Run individual components
+
+Monte Carlo simulation only:
+
+```bash
+make simulation
+```
+
+Timing comparison only:
+
+```bash
+make timing
+```
+
+Remove generated outputs:
+
+```bash
+make clean
+```
+
+## Original analysis
+
+The original version of the analysis should be preserved as the first Git commit (optionally tagged `original`). The final submission should report both that original commit hash and the final commit hash.

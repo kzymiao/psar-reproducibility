@@ -1,0 +1,11 @@
+# Reflection
+
+The original analysis consisted of several standalone Python scripts for data generation, CLE/CLS estimation, Monte Carlo simulation, and timing comparison. The scripts could reproduce research results, but the workflow was difficult for another person to rerun because parameters were edited directly in source files, outputs were mostly printed to the terminal, figures were displayed interactively, dependencies were not recorded, and there was no automated test suite or one-command workflow.
+
+The largest challenge was turning the research code into a reproducible project without changing the statistical methods. I therefore kept the CLE and CLS implementations essentially unchanged and focused on the surrounding workflow. I moved the code into a clear `src/` directory, added command-line entry points, fixed random seeds for both NumPy and Python's `random` module, saved tables and figures under `results/`, recorded package dependencies, and added a Makefile. I also reduced the expensive Monte Carlo experiment to `N=500, R=100` and the timing experiment to five repetitions per sample size so the course version is more practical to reproduce. These runtime changes are documented in the README.
+
+The changes with the largest impact were the one-command `make reproduce` workflow, explicit output files, and tests. The tests check a paper-specific data-generation property and the correctness of the Monte Carlo summaries. In a future project, I would design the analysis as a reproducible pipeline from the beginning instead of adding structure after the analysis was complete.
+
+Restructuring took one week, the original code was written by me, but I had forgotten much of its structure, let alone the details. Testing took half a day. Documentation took half a day; with GPT's help in particular, this went much faster. Automation took two hours. I had practiced similar tasks in class, so I was able to write it fairly quickly. The main issue was that the code did not run very fast.
+
+AI tools were used to help review the project requirements, identify reproducibility issues, and draft small workflow changes. I verified the suggestions by comparing them with the project instructions and the paper, running the test suite, and checking the generated outputs.
