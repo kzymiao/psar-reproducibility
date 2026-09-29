@@ -1,4 +1,4 @@
-#Bias-Correction for Privacy-Protected Spatial Autoregressive Models with  Application to Restaurant Network Analysis
+## Bias-Correction for Privacy-Protected Spatial Autoregressive Models with  Application to Restaurant Network Analysis
 
 This repository provides the Python code for the Corrected Likelihood Estimator (CLE) and the Corrected Least Squares Estimator (CLS) for spatial autoregressive (SAR) models with noise-added privacy protection, accompanying the paper.  
 
