@@ -15,6 +15,21 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
+def generate_covariates(N, p):
+    """Generate N x p standard-normal covariates truncated to [-2, 2].
+
+    The paper bounds the infinity norm of each covariate vector by 2.
+    Values outside [-2, 2] are resampled until all coordinates satisfy
+    the bound.
+    """
+    X = np.random.normal(0, 1, N * p).reshape(N, p)
+    mask = np.abs(X) > 2
+    while np.any(mask):
+        X[mask] = np.random.normal(0, 1, np.sum(mask))
+        mask = np.abs(X) > 2
+    return X
+
+
 def generate_PowerLaw(N):  
     
     df=np.ceil(powerlaw.Power_Law(xmin=3,parameters=[3.5]).generate_random(N))
@@ -276,7 +291,7 @@ def generate(N,p,beta,rho,type_w,distri_e,distri_ep,lambda2):
     
     S = np.eye(N)-rho*W
     S1=np.linalg.inv(S)
-    X=np.random.normal(0,1,N*p).reshape(N,p)
+    X=generate_covariates(N, p)
     #cov=[[1. , 0.2 ],[0.2 , 1]]
     #X= np.random.multivariate_normal([0]*p, cov, size=(N))
 
