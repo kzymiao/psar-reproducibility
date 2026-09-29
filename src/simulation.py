@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from CLE import lce_inference,lce_estimate_x
-from CLS import cls_inference,cls_estimate_x,f_cls_biascorr
-from generation import generate
+from .CLE import lce_inference,lce_estimate_x
+from .CLS import cls_inference,cls_estimate_x,f_cls_biascorr
+from .generation import generate
 import numpy as np
 import scipy 
 import random
