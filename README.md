@@ -10,7 +10,7 @@ For the course project, the designated reproducible outputs are intentionally sm
 
 - **Monte Carlo summary:** `N = 500`, `R = 100`, normal errors, Power-Law network, CLS estimator.
 - **Timing comparison:**
-The timing experiment compares CLE and CLS for 1) N = 500, 1000, 1500, 2000, 2500, 3000; 2) 5 repetitions for each sample size; 3) Dyad network; 4)lambda2 = 0.5; 5)lambdax = 1.0.
+The timing experiment compares CLE and CLS for 1) N = 500, 1000, 1500, 2000; 2) 5 repetitions for each sample size; 3) Dyad network; 4)lambda2 = 0.5; 5)lambdax = 1.0.
 
 The reported CPU time is the average over the five repetitions.
 The paper reports a larger timing experiment with sample sizes up to N = 5000 and 100 repetitions. For this course reproducibility project, we restrict the timing experiment to N <= 3000 and use 5 repetitions per sample size so that the complete workflow can be reproduced within a practical amount of time.
