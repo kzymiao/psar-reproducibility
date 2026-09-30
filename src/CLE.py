@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Corrected likelihood estimation for the privacy-protected SAR model.
 
+This module implements the corrected likelihood estimator (CLE) and the corresponding inference procedure used in the accompanying paper.
+The original mathematical variable names and numerical calculations are retained to preserve correspondence with the original implementation.
+"""
 import numpy as np
 import scipy 
 import random
@@ -10,21 +14,42 @@ from random import randint, sample
 import networkx as nx
 import time
 import warnings
-def f_lambda_ture_sig(hbeta1,hbeta2,hrho,Y,X,W,lambda2,lambdax):  # 计算一阶导(Y)
+def f_lambda_ture_sig(hbeta1,hbeta2,hrho,Y,X,W,lambda2,lambdax):  
+    """Compute the corrected CLE score, Hessian, and variance estimate.
+    The function evaluates the quantities required for one
+    Newton-Raphson update of the corrected likelihood estimator.
+
+    Returns
+    -------
+    f : numpy.ndarray
+        Corrected first-order derivative (score).
+    g : numpy.ndarray
+        Corrected second-order derivative (Hessian).
+    hsig : float
+        Current estimate of the structural-error variance.
+    """
+
     N=len(Y)
     p1=len(hbeta1)
     p2=len(hbeta2)
     p=p1+p2
+    # Split the covariates into faithfully observed and
+    # privacy-noised components.
     X1=X[:,0:p1]
     X2=X[:,p1:p]
+    
+    # Current SAR transformation matrix S(rho) = I - rho W.
     hS= np.eye(N)-hrho*W.toarray()
     hS1=np.linalg.inv(hS)
+    
+    # Residual evaluated at the current parameter iterate.
     V=hS.dot(Y)-(X1.dot(hbeta1)+X2.dot(hbeta2)).reshape(N,1)
     SS=hS.dot(hS.T)
     hsig=(V.T.dot(V)-lambdax*hbeta2.T.dot(hbeta2)*N-lambda2*(SS).trace())/N#-lambdax*hbeta2.T@hbeta2
     hsig=hsig[0,0]
     s1=1.0/hsig
     
+    # Covariance structure induced by the structural error and response privacy noise.
     omega=hsig*np.eye(N)+lambda2*SS
     omega1=np.linalg.inv(omega)
     omega2=omega1.dot(omega1)
@@ -38,6 +63,7 @@ def f_lambda_ture_sig(hbeta1,hbeta2,hrho,Y,X,W,lambda2,lambdax):  # 计算一阶
 
     sim=W.dot(hS.T)+hS.dot((W.toarray()).T)
     
+    # Assemble the corrected Hessian used for the Newton-Raphson update.
     g_rr=lambda2**2*(omega1.dot(sim).dot(omega1).dot(W.toarray()).dot(hS.T)).trace()-lambda2*(omega1.dot(W.toarray()).dot((W.toarray()).T)).trace()-(W.toarray().dot(hS1).dot(W.toarray()).dot(hS1)).trace()-(Y.T.dot((W.toarray()).T).dot(omega1).dot(W.toarray()).dot(Y))+2*lambda2*(V.T.dot(omega1).dot(sim).dot(omega1).dot(W.toarray()).dot(Y))-lambda2**2*(V.T.dot(omega1).dot(sim).dot(omega1).dot(sim).dot(omega1).dot(V))+lambda2*(V.T.dot(omega1).dot(W.toarray()).dot((W.toarray()).T).dot(omega1).dot(V))
     g_rr=g_rr+lambda2**2*lambdax*(hbeta2.T.dot(hbeta2))[0,0]*(omega2.dot(sim).dot(omega1).dot(sim)).trace()-lambdax*lambda2*(hbeta2.T.dot(hbeta2))[0,0]*(omega2.dot(W.toarray()).dot(W.toarray().T)).trace()
     g_b1b1=-X1.T.dot(omega1).dot(X1)
@@ -53,6 +79,18 @@ def f_lambda_ture_sig(hbeta1,hbeta2,hrho,Y,X,W,lambda2,lambdax):  # 计算一阶
     return f,g,hsig
 
 def lce_estimate_x(X,Y1,W,p1,lambda2,lambdax):
+    """Estimate CLE parameters using corrected Newton-Raphson updates.
+
+    Returns
+    -------
+    hrbeta : numpy.ndarray
+        Parameter estimates in implementation order
+        [beta1, beta2, rho].
+    hsig : float
+        Estimated structural-error variance.
+    k : int
+        Number of Newton-Raphson iterations performed.
+    """
     N=len(Y1)
     p=len(X[1])
     p2=p-p1

@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""Simulation data generation for the privacy-protected SAR model.
+
+This module generates network weight matrices, covariates, structural errors, privacy noise, and responses used in the Monte Carlo experiments.
+"""
 
 import numpy as np
 import scipy 
@@ -28,6 +32,11 @@ def generate_covariates(N, p):
         X[mask] = np.random.normal(0, 1, np.sum(mask))
         mask = np.abs(X) > 2
     return X
+
+
+# ---------------------------------------------------------------------
+# Network-generation mechanisms
+# ---------------------------------------------------------------------
 
 
 def generate_PowerLaw(N):  
@@ -278,7 +287,12 @@ def generate_Block(N):
 
 
 def generate(N,p,beta,rho,type_w,distri_e,distri_ep,lambda2):
-    
+    """Generate one Monte Carlo dataset from the PSAR model.
+
+    The routine generates a network, covariates, structural errors,
+    response privacy noise, the latent SAR response, and the observed
+    privacy-protected response.
+    """    
     #np.random.seed(123)
     if type_w == 'PowerLaw':
         W=generate_PowerLaw1(N)

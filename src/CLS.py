@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Corrected least-squares estimation for the privacy-protected SAR model.
 
+This module implements the corrected least-squares estimator (CLS) and the corresponding inference procedure used in the accompanying paper.
+The original mathematical variable names and numerical calculations are retained to preserve correspondence with the original implementation.
+"""
 
 import numpy as np
 import scipy 
@@ -27,14 +31,18 @@ def f_cls_biascorr(hbeta1,hbeta2,hrho,Y,X,W,lambda2,lambdax):
     p1=len(hbeta1)
     p2=len(hbeta2)
     p=p1+p2
+
+    # Split the covariates into faithfully observed and privacy-noised components.
     X1=X[:,0:p1]
     X2=X[:,p1:p]
     
+    # Current SAR transformation matrix S(rho) = I - rho W.
     hS= np.eye(N)-hrho*W.toarray()
     
     
     SS=(hS.T)@hS
     
+    # Residual evaluated at the current parameter iterate.
     V=hS.dot(Y)-(X1.dot(hbeta1)+X2.dot(hbeta2)).reshape(N,1)
     
     
@@ -46,6 +54,7 @@ def f_cls_biascorr(hbeta1,hbeta2,hrho,Y,X,W,lambda2,lambdax):
     s1=1.0/hsig
     
     
+    # d represents d_rho in the CLS criterion, and D is its diagonal-matrix representation.
     d=((1/np.sum(hS*hS,axis=0))).reshape(N,1)
     D=np.diag(d.flatten())
     dd=d*d
@@ -53,9 +62,12 @@ def f_cls_biascorr(hbeta1,hbeta2,hrho,Y,X,W,lambda2,lambdax):
     
     W2=(W.T.dot(W)).toarray()
     WW=(np.sum(W.toarray()*W.toarray(),axis=0)).reshape(N,1)
+
+    # First derivative of d_rho with respect to rho.
     ldD=-2*hrho*(dd)*(WW)
     dD=np.diag(ldD.flatten())
 
+    # Second derivative of d_rho with respect to rho.
     lddD=-2*(dd)*(WW)+8*hrho**2*(d*dd*WW*WW)
     ddD=np.diag(lddD.flatten())
     
