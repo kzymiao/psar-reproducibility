@@ -104,7 +104,7 @@ def parse_args():
         "--n-values",
         type=int,
         nargs="+",
-        default=[500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000],
+        default=[500, 1000, 1500, 2000, 2500, 3000],
     )
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--seed", type=int, default=123)
