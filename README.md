@@ -13,7 +13,8 @@ For the course project, the designated reproducible outputs are intentionally sm
 The timing experiment compares CLE and CLS for 1) N = 500, 1000, 1500, 2000; 2) 5 repetitions for each sample size; 3) Dyad network; 4)lambda2 = 0.5; 5)lambdax = 1.0.
 
 The reported CPU time is the average over the five repetitions.
-The paper reports a larger timing experiment with sample sizes up to N = 5000 and 100 repetitions. For this course reproducibility project, we restrict the timing experiment to N <= 3000 and use 5 repetitions per sample size so that the complete workflow can be reproduced within a practical amount of time.
+The paper reports a larger timing experiment with sample sizes up to N = 5000 and 100 repetitions. For this course reproducibility project, we restrict the timing experiment to N <= 2000 and use 5 repetitions per sample size so that the complete workflow can be 
+reproduced within a practical amount of time.
 
 ## Paper-aligned settings
 
@@ -81,8 +82,8 @@ make test
 
 The tests validate two important pieces of the workflow:
 
-1. generated covariates satisfy the bounded-covariate condition used in the paper simulation;
-2. the reported Monte Carlo summary statistics are computed correctly on a known example.
+1. **Data validation:** the generated SAR network weight matrix has the expected structural properties, including zero diagonal entries, nonnegative weights, and row sums equal to one for non-isolated nodes.
+2. **Pipeline integrity:** a small end-to-end simulation runs successfully and produces a valid summary file containing results for `beta1`, `beta2`, and `rho`.
 
 ## Run individual components
 
