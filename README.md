@@ -9,9 +9,17 @@ The code implements the corrected likelihood estimator (CLE) and corrected least
 For the course project, the designated reproducible outputs are intentionally smaller than the full paper experiments so the workflow is practical to rerun:
 
 - **Monte Carlo summary:** `N = 500`, `R = 100`, normal errors, Power-Law network, CLS estimator.
-- **Timing comparison:** CLE versus CLS for the sample-size grid in `src/timing.py`, with **5 repetitions per N** and the mean running time reported.
+- **Timing comparison:**
+The timing experiment compares CLE and CLS for
 
-The paper uses larger simulation budgets in several experiments. These reduced settings are a documented course-project choice for runtime, not a claim of exact numerical reproduction of every table and figure in the paper.
+- N = 500, 1000, 1500, 2000, 2500, 3000;
+- 5 repetitions for each sample size;
+- Dyad network;
+- lambda2 = 0.5;
+- lambdax = 1.0.
+
+The reported CPU time is the average over the five repetitions.
+The paper reports a larger timing experiment with sample sizes up to N = 5000 and 100 repetitions. For this course reproducibility project, we restrict the timing experiment to N <= 3000 and use 5 repetitions per sample size so that the complete workflow can be reproduced within a practical amount of time.
 
 ## Paper-aligned settings
 
